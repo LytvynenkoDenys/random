@@ -1,0 +1,196 @@
+#include <iostream>
+#include <cmath>
+#include <ctime>
+#include <iomanip>
+using namespace std;
+
+long long inverse(long long b) {
+	long long m = 1231525;
+	long long ex = m - 2;
+	if (b == 1)
+		return 1;
+	long long r = 1;
+	while (ex)
+	{
+		if (ex & 1)r = (r * b) % m;
+		ex = ex >> 1;
+		b = (b * b) % m;
+	}
+	return r;
+}
+
+int methodNumberOne(long long x)
+{
+	x = (1664525 * x + 1013904223) % 2147483648;
+	return x;
+}
+
+int methodNumberTwo(long long x)
+{
+	x = (1 * x * x + 2 * x + 13) % 1299721;
+	return x;
+}
+
+int methodNumberThree(long long &x, int &xPrevPrev, int &xPrev)
+{
+	x = (xPrevPrev + xPrev) % 1299721;
+	xPrevPrev = xPrev;
+	xPrev = x;
+	return x;
+}
+
+int methodNumberFour(long long x)
+{
+	x = (5 * inverse(x) + 2) % 1299721;
+	return x;
+}
+
+int methodNumberFive(long long x)
+{
+	long long a, b, z;
+	a = methodNumberOne(x);
+	b = methodNumberTwo(x);
+	z = abs((a - b)) % 2147483648;
+	return z;
+}
+
+int methodNumberSix(long long x)
+{
+	int sigma[12] = { 0 };
+	int s = 0;
+	for (int i = 0; i < 12; ++i)
+	{
+		sigma[i] = methodNumberOne(x);
+		x = sigma[i];
+		s += sigma[i];
+	}
+	return s - 6;
+}
+
+void diagramm(int a[10])
+{
+	int i, j;
+	for (i = 0; i < 10; ++i)
+	{
+		cout << fixed << setprecision(1) << "( " << double(i) / 10 << "; " << double(i + 1) / 10 << ") : ";
+		for (j = 0; j < double(a[i]) / 1000; ++j)
+			cout << "*";
+		cout << endl;
+	}
+}
+
+void diagramm2(int a[60])
+{
+	int i, j;
+	for (i = -30; i < 30; ++i)
+	{
+		cout << fixed << setprecision(1) << "( " << double(i) / 10 << "; " << double(i + 1) / 10 << ") : ";
+		for (j = 0; j < double(a[i]) / 1000; ++j)
+			cout << "*";
+		cout << endl;
+	}
+}
+
+using namespace std;
+int main()
+{
+	int xPrev, xPrevPrev;
+	int a[10] = {0};
+	static const int N = 100000;
+	int typeOfMethod, j, i,currEl;
+	long long x;
+	double temp;
+	x = time(0);
+	cin >> typeOfMethod;//универсально
+	switch(typeOfMethod)
+	{
+		case 1:
+		{
+			for (i = 0; i < N; ++i)
+			{
+				x = methodNumberOne(x);
+				temp = double(x) / 2147483648;
+				++a[int(temp * 10)];
+			}
+			diagramm(a);
+			break;
+		}
+		case 2:
+		{
+			for (i = 0; i < N; ++i)
+				{
+					x = methodNumberTwo(x);
+					temp = double(x) / 1299721;
+					++a[int(temp * 10)];
+				}
+			diagramm(a);
+			break;
+		}
+		case 3:
+		{
+			xPrevPrev = methodNumberTwo(x);
+			xPrev = methodNumberTwo(x);
+			for (i = 0; i < N; ++i)
+			{
+				x = methodNumberThree(x, xPrevPrev, xPrev);
+				temp = double(x) / 1299721;
+				++a[int(temp * 10)];
+			}
+			diagramm(a);
+			break;
+		}
+		case 4:
+		{
+			for (i = 0; i < N; ++i)
+			{
+				x = methodNumberFour(x);
+				temp = double(x) / 1299721;
+				++a[int(temp * 10)];
+			}
+			diagramm(a);
+			break;
+		}
+		case 5:
+		{
+			for (i = 0; i < N; ++i)
+			{
+				x = methodNumberFive(x);
+				temp = double(x) / 2147483648;
+				++a[int(temp * 10)];
+			}
+			diagramm(a);
+			break;
+		}
+		case 6:
+		{
+			int count[60];
+			for (i = 0; i < 8; ++i)
+			{
+				x = methodNumberSix(x);
+				//temp = double(x) / 2147483648;
+				//++a[int(temp * 10)];
+				cout << x << "\n\n";
+			}
+			//diagramm2(count);
+			break;
+		}
+		case 7:
+		{
+			break;
+		}
+		case 8:
+		{
+			break;
+		}
+		case 9:
+		{
+			break;
+		}
+		case 10:
+		{
+			break;
+		}
+	}
+	system("pause");
+	return 0;
+}
